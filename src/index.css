@@ -32,6 +32,38 @@ ol, ul {
   width: 34px;
 }
 
+.column-notation {
+  background: #fff;
+  float: left;
+  font-size: 10px;
+  line-height: 14px;
+  height: 14px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.row-notation {
+  background: #fff;
+  float: left;
+  font-size: 10px;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 16px;
+}
+
+.board-columns {
+  margin-left: 16px;
+  clear: both;
+  display: table;
+}
+
 .square:focus {
   outline: none;
 }

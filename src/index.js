@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+const SIZE = 3;
+const COLUMNS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
 function Square(props) {
   return (
     <button
@@ -10,6 +13,22 @@ function Square(props) {
     >
       {props.value}
     </button>
+  );
+}
+
+function ColumnNotation(props) {
+  return (
+    <span className="column-notation">
+      {props.value}
+    </span>
+  );
+}
+
+function RowNotation(props) {
+  return (
+    <span className="row-notation">
+      {props.value}
+    </span>
   );
 }
 
@@ -23,25 +42,53 @@ class Board extends React.Component {
     );
   }
 
+  renderColumnNotation(i) {
+    return (
+      <ColumnNotation value={i} />
+    );
+  }
+
+  renderRowNotation(i) {
+    return (
+      <RowNotation value={i} />
+    );
+  }
+
+  renderBoardColumns() {
+    let columnHeaders = [];
+    for (let i = 0; i < SIZE; i++) {
+      columnHeaders.push(
+        this.renderColumnNotation(COLUMNS[i])
+      )
+    }
+    return <div className="board-columns">{columnHeaders}</div>
+  }
+
+  renderBoardSquares() {
+    let boardSquares = [];
+    let rows = [];
+    for (let row = 0; row < SIZE; row++) {
+      for (let i = row * SIZE; i < row * SIZE + SIZE; i++) {
+        console.log(i)
+        boardSquares.push(this.renderSquare(i));
+      }
+      rows.push(
+        <div key={row} className="board-row">
+          {this.renderRowNotation(row + 1)}
+          {boardSquares}
+        </div>
+      );
+      boardSquares = [];
+    }
+    return rows;
+  }
+
   render() {
     return (
       <div>
         <div>
-          <div className="board-row">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(3)}
-            {this.renderSquare(4)}
-            {this.renderSquare(5)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(6)}
-            {this.renderSquare(7)}
-            {this.renderSquare(8)}
-          </div>
+          {this.renderBoardColumns()}
+          {this.renderBoardSquares()}
         </div>
 
       </div>
@@ -66,9 +113,22 @@ class Game extends React.Component {
     this.state = {
       history: [{
         squares: Array(9).fill(null),
+        movePosition: null
       }],
       xIsNext: true,
       stepNumber: 0,
+      focus: null
+    }
+    this.gridMap = {
+      0: 'A1',
+      1: 'B1',
+      2: 'C1',
+      3: 'A2',
+      4: 'B2',
+      5: 'C2',
+      6: 'A3',
+      7: 'B3',
+      8: 'C3',
     }
   }
 
@@ -84,6 +144,7 @@ class Game extends React.Component {
     this.setState({
       history: history.concat([{
         squares: squares,
+        movePosition: this.gridMap[i],
       }]),
       xIsNext: !this.state.xIsNext,
       stepNumber: history.length,
@@ -94,6 +155,7 @@ class Game extends React.Component {
     this.setState({
       history: [{
         squares: Array(9).fill(null),
+        movePosition: null,
       }],
       xIsNext: true,
       stepNumber: 0,
@@ -107,21 +169,28 @@ class Game extends React.Component {
     })
   }
 
-  render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
-
+  getMoveList(history) {
     const moves = history.map((step, move) => {
-      const desc = move ?
-        'Go to move #' + move :
+      let desc = move ?
+        'Go to move #' + move + ' (' + step.movePosition + ')' :
         'Go to game start';
+      if (move === this.state.stepNumber) {
+        desc = <b>{desc}</b>
+      }
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
       );
     })
+    return moves;
+  }
+
+  render() {
+    const history = this.state.history;
+    const current = history[this.state.stepNumber];
+    const winner = calculateWinner(current.squares);
+    const moves = this.getMoveList(history)
 
     let status;
     if (winner) {
