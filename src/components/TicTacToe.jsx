@@ -131,12 +131,21 @@ class TicTacToe extends React.Component {
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
             size={3}
+            tic={true}
           />
           <div>
             <ResetButton
               className="reset-button"
               onClick={() => this.handleReset()}
             />
+          </div>
+          <div>
+            <button
+              className="game-selector" 
+              onClick={() => {this.props.returnHome(0)}}
+            >
+              Home Page
+            </button>
           </div>
         </div>
         <div className="game-info">

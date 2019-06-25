@@ -32,6 +32,36 @@ ol, ul {
   width: 34px;
 }
 
+.light-square {
+  background: #FFF8DC;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.dark-square {
+  background: #CD853F;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
 .column-notation {
   background: #fff;
   float: left;
@@ -64,11 +94,15 @@ ol, ul {
   display: table;
 }
 
-.square:focus {
+.light-square:focus {
   outline: none;
 }
 
-.kbd-navigation .square:focus {
+.dark-square:focus {
+  outline: none;
+}
+
+.kbd-navigation .light-square .dark-square:focus {
   background: #ddd;
 }
 

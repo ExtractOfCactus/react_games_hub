@@ -5,7 +5,7 @@ const COLUMNS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 function Square(props) {
   return (
     <button
-      className="square"
+      className={props.classOption}
       onClick={props.onClick}
     >
       {props.value}
@@ -30,11 +30,12 @@ function RowNotation(props) {
 }
 
 class Board extends React.Component {
-//  const size = this.props.size;
 
-  renderSquare(i) {
+  renderSquare(i, className) {
     return (
       <Square
+        key={i}
+        classOption={className}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -43,7 +44,7 @@ class Board extends React.Component {
 
   renderColumnNotation(i) {
     return (
-      <ColumnNotation value={i} />
+      <ColumnNotation key={i} value={i} />
     );
   }
 
@@ -63,13 +64,22 @@ class Board extends React.Component {
     return <div className="board-columns">{columnHeaders}</div>
   }
 
+  determineSquareClass(row, index) {
+    if (this.props.tic) {
+      return 'square'
+    }
+    return row % 2 === 0 ? 
+      (index % 2 === 0 ? 'dark-square' : 'light-square'):
+      (index % 2 === 0 ? 'light-square' : 'dark-square');
+  }
+
   renderBoardSquares() {
     let boardSquares = [];
     let rows = [];
     for (let row = 0; row < this.props.size; row++) {
       for (let i = row * this.props.size; i < row * this.props.size + this.props.size; i++) {
-        console.log(i)
-        boardSquares.push(this.renderSquare(i));
+        const classOption = this.determineSquareClass(row, i)
+        boardSquares.push(this.renderSquare(i, classOption));
       }
       rows.push(
         <div key={row} className="board-row">
