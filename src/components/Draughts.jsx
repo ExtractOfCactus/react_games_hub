@@ -1,6 +1,8 @@
 import React from 'react';
 import Board from './Board';
 
+// i = index of selected square in the array of squares which makes up the board
+
 function setUpDraughtsStart() {
   let squares = Array(64).fill(null);
   for (let i = 0; i < 64; i++) {
@@ -46,7 +48,7 @@ class Draughts extends React.Component {
         squares: setUpDraughtsStart(),
         movePosition: null
       }],
-      nextMover: 'X',
+      nextPlayer: 'X',
       stepNumber: 0,
       previousFocus: null,
       focus: null,
@@ -54,32 +56,68 @@ class Draughts extends React.Component {
   }
 
   resetPeviousFocusHighlight() {
-    if (this.state.focus) {
+    if (this.state.focus !== null) {
       const previousSquare = document.getElementById(this.state.focus);
       previousSquare.style.backgroundColor = '#cd853f';
     }
   }
 
-  handleClick(i) {
-    console.log(i);
-    // highlight potential moves
-    this.resetPeviousFocusHighlight();
-
-    let newFocus = null;
-    let previousFocus = this.state.focus;
-    const currentSquare = document.getElementById(i);
-
-    if (currentSquare.classList.contains('light-square')) {
-      previousFocus = null
+  resetPotentialMovesHighlight(legalMoves) {
+    for (let move of legalMoves) {
+      let potentialSquare = document.getElementById(move);
+      potentialSquare.style.backgroundColor = '#cd853f';
     }
+  }
+
+  highlightPotentialMoves(i) {
+    const legalMoves = this.findLegalMoves(i)
+    for (let move of legalMoves) {
+      let potentialSquare = document.getElementById(move);
+      potentialSquare.style.backgroundColor = '#bdff5b';
+    }
+  }
+
+  focusHighlighting(i) {
+    const currentSquare = document.getElementById(i);
+    currentSquare.style.backgroundColor = '#64d8ff';
+    this.highlightPotentialMoves(i);
+  }
+
+  findLegalMoves(i) {
+    let legalMoves = [];
+    if (this.state.nextPlayer === 'X' && i + 7 < 64) {
+      if (i % 8 !== 0) {
+        legalMoves.push(i + 7);
+      }
+      if (i % 8 !== 7) {
+        legalMoves.push(i + 9);
+      }
+    } else if (this.state.nextPlayer === 'O' && i - 7 > -1){
+      if (i % 8 !== 7) {
+        legalMoves.push(i - 7);
+      }
+      if (i % 8 !== 0) {
+        legalMoves.push(i - 9);
+      }
+    }
+
+    return legalMoves
+  }
+
+  handleClick(i) {
+    let newFocus = null;
+    const previousFocus = this.state.focus;
+    
+    this.resetPeviousFocusHighlight();
+    this.resetPotentialMovesHighlight(this.findLegalMoves(previousFocus));
 
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
 
-    if (squares[i] === this.state.nextMover && this.state.focus !== i) {
+    if (squares[i] === this.state.nextPlayer && this.state.focus !== i) {
+      this.focusHighlighting(i);
       newFocus = i;
-      currentSquare.style.backgroundColor = '#64d8ff';
     } 
 
     this.setState({
