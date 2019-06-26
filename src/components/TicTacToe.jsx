@@ -131,7 +131,7 @@ class TicTacToe extends React.Component {
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
             size={3}
-            tic={true}
+            game={1}
           />
           <div>
             <ResetButton
@@ -143,6 +143,7 @@ class TicTacToe extends React.Component {
             <button
               className="game-selector" 
               onClick={() => {this.props.returnHome(0)}}
+
             >
               Home Page
             </button>

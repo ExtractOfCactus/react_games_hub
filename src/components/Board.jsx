@@ -6,6 +6,7 @@ function Square(props) {
   return (
     <button
       className={props.classOption}
+      id={props.id}
       onClick={props.onClick}
     >
       {props.value}
@@ -35,6 +36,7 @@ class Board extends React.Component {
     return (
       <Square
         key={i}
+        id={i}
         classOption={className}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
@@ -65,7 +67,7 @@ class Board extends React.Component {
   }
 
   determineSquareClass(row, index) {
-    if (this.props.tic) {
+    if (this.props.game === 1) {
       return 'square'
     }
     return row % 2 === 0 ? 

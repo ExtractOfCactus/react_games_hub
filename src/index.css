@@ -94,6 +94,10 @@ ol, ul {
   display: table;
 }
 
+.square:focus {
+  outline: none;
+}
+
 .light-square:focus {
   outline: none;
 }
