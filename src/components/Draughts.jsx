@@ -48,7 +48,7 @@ class Draughts extends React.Component {
         squares: setUpDraughtsStart(),
         movePosition: null
       }],
-      nextPlayer: 'X',
+      nextPlayer: 'O',
       stepNumber: 0,
       previousFocus: null,
       focus: null,
@@ -104,30 +104,45 @@ class Draughts extends React.Component {
     return legalMoves
   }
 
+  movePiece(i, squares, nextPlayer, previousFocus) {
+    squares[previousFocus] = null;
+    squares[i] = nextPlayer;
+    return squares;
+  }
+
   handleClick(i) {
     let newFocus = null;
     const previousFocus = this.state.focus;
-    
-    this.resetPeviousFocusHighlight();
-    this.resetPotentialMovesHighlight(this.findLegalMoves(previousFocus));
-
+    const previousLegalMoves = this.findLegalMoves(previousFocus)
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
-    const squares = current.squares.slice();
+    let squares = current.squares.slice();
+    let nextPlayer = this.state.nextPlayer;
 
-    if (squares[i] === this.state.nextPlayer && this.state.focus !== i) {
+    this.resetPeviousFocusHighlight();
+    this.resetPotentialMovesHighlight(previousLegalMoves);
+
+    if (previousFocus && previousLegalMoves.includes(i)) {
+      squares = this.movePiece(i, squares, nextPlayer, previousFocus);
+      // nextPlayer = nextPlayer === 'X' ? 'O' : 'X';
+    } else if (squares[i] === this.state.nextPlayer && this.state.focus !== i) {
       this.focusHighlighting(i);
       newFocus = i;
     } 
 
     this.setState({
+      history: [{
+        squares: squares,
+      }],
       previousFocus: previousFocus,
       focus: newFocus,
+      nextPlayer: nextPlayer,
     })
   }
 
   render() {
     const current = this.state.history[this.state.stepNumber];
+    const status = 'Next player: ' + (this.state.nextPlayer);
     return (
       <div>
         <div className="game-board">
@@ -144,6 +159,9 @@ class Draughts extends React.Component {
               Home Page
             </button>
           </div>
+        </div>
+        <div className="game-info">
+          <div>{status}</div>
         </div>
       </div>
     )
