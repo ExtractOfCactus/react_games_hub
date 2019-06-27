@@ -1,7 +1,7 @@
 import React from 'react';
 import Board from './Board';
 
-// i = index of selected square in the array of squares which makes up the board
+// i = index of square in the array of squares which makes up the board
 
 function setUpDraughtsStart() {
   let squares = Array(64).fill(null);
@@ -48,12 +48,13 @@ class Draughts extends React.Component {
         squares: setUpDraughtsStart(),
         movePosition: null
       }],
-      nextPlayer: 'O',
+      nextPlayer: 'X',
       stepNumber: 0,
       previousFocus: null,
       focus: null,
     }
   }
+
 
   resetPeviousFocusHighlight() {
     if (this.state.focus !== null) {
@@ -64,40 +65,55 @@ class Draughts extends React.Component {
 
   resetPotentialMovesHighlight(legalMoves) {
     for (let move of legalMoves) {
-      let potentialSquare = document.getElementById(move);
-      potentialSquare.style.backgroundColor = '#cd853f';
+      if (move) {
+        let potentialSquare = document.getElementById(move);
+        potentialSquare.style.backgroundColor = '#cd853f';
+      }
     }
   }
 
-  highlightPotentialMoves(i) {
-    const legalMoves = this.findLegalMoves(i)
+  highlightPotentialMoves(legalMoves) {
     for (let move of legalMoves) {
-      let potentialSquare = document.getElementById(move);
-      potentialSquare.style.backgroundColor = '#bdff5b';
+      if (move) {
+        let potentialSquare = document.getElementById(move);
+        potentialSquare.style.backgroundColor = '#bdff5b';
+      }
     }
   }
 
-  focusHighlighting(i) {
+  focusHighlighting(i, legalMoves) {
     const currentSquare = document.getElementById(i);
     currentSquare.style.backgroundColor = '#64d8ff';
-    this.highlightPotentialMoves(i);
+    this.highlightPotentialMoves(legalMoves);
   }
 
-  findLegalMoves(i) {
+  addMove(squares, i, move) {
+    if (squares[i + move] === null) {
+      return i + move
+    } else if (squares[i + move] !== this.state.nextPlayer && squares[i + move + move] === null) {
+      const potentialSquare = document.getElementById(i + move + move);
+      if (!potentialSquare.classList.contains('light-square')){
+        return i + move + move
+      }
+    }
+    return null
+  }
+
+  findLegalMoves(i, squares) {
     let legalMoves = [];
     if (this.state.nextPlayer === 'X' && i + 7 < 64) {
       if (i % 8 !== 0) {
-        legalMoves.push(i + 7);
+        legalMoves.push(this.addMove(squares, i, 7));
       }
       if (i % 8 !== 7) {
-        legalMoves.push(i + 9);
+        legalMoves.push(this.addMove(squares, i, 9));
       }
     } else if (this.state.nextPlayer === 'O' && i - 7 > -1){
       if (i % 8 !== 7) {
-        legalMoves.push(i - 7);
+        legalMoves.push(this.addMove(squares, i, -7));
       }
       if (i % 8 !== 0) {
-        legalMoves.push(i - 9);
+        legalMoves.push(this.addMove(squares, i, -9));
       }
     }
 
@@ -105,6 +121,11 @@ class Draughts extends React.Component {
   }
 
   movePiece(i, squares, nextPlayer, previousFocus) {
+    const diff = i - previousFocus;
+    if (diff > 9 || diff < -9) {
+      const takenPiece = previousFocus + (diff/2);
+      squares[takenPiece] = null;
+    }
     squares[previousFocus] = null;
     squares[i] = nextPlayer;
     return squares;
@@ -113,20 +134,25 @@ class Draughts extends React.Component {
   handleClick(i) {
     let newFocus = null;
     const previousFocus = this.state.focus;
-    const previousLegalMoves = this.findLegalMoves(previousFocus)
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     let squares = current.squares.slice();
+    const legalMoves = this.findLegalMoves(i, squares);
+    let previousLegalMoves = [];
+    if (previousFocus !== null) {
+      previousLegalMoves = this.findLegalMoves(previousFocus, squares);
+    }
     let nextPlayer = this.state.nextPlayer;
 
     this.resetPeviousFocusHighlight();
     this.resetPotentialMovesHighlight(previousLegalMoves);
 
-    if (previousFocus && previousLegalMoves.includes(i)) {
+    if (previousFocus !== null && previousLegalMoves.includes(i)) {
       squares = this.movePiece(i, squares, nextPlayer, previousFocus);
-      // nextPlayer = nextPlayer === 'X' ? 'O' : 'X';
-    } else if (squares[i] === this.state.nextPlayer && this.state.focus !== i) {
-      this.focusHighlighting(i);
+      nextPlayer = nextPlayer === 'X' ? 'O' : 'X';
+    // check piece belongs to player, click is not a double click, there are legal moves the piece can make.  
+    } else if (squares[i] === nextPlayer && previousFocus !== i && legalMoves.length !== 0) {
+      this.focusHighlighting(i, legalMoves);
       newFocus = i;
     } 
 
