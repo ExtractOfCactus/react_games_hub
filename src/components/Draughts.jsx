@@ -40,6 +40,15 @@ function squareIsStartingOSquare(i) {
   return false
 }
 
+function setUpTest() {
+  let squares = Array(64).fill(null);
+  squares[50] = 'XX';
+  squares[20] = 'XX';
+  squares[43] = 'O';
+  squares[27] = 'O';
+  return squares
+}
+
 class Draughts extends React.Component {
   constructor(props) {
     super(props);
@@ -56,7 +65,6 @@ class Draughts extends React.Component {
     }
   }
 
-
   resetPeviousFocusHighlight() {
     if (this.state.focus !== null) {
       const previousSquare = document.getElementById(this.state.focus);
@@ -66,7 +74,7 @@ class Draughts extends React.Component {
 
   resetPotentialMovesHighlight(legalMoves) {
     for (let move of legalMoves) {
-      if (move) {
+      if (move !== null) {
         let potentialSquare = document.getElementById(move);
         potentialSquare.style.backgroundColor = '#cd853f';
       }
@@ -75,7 +83,7 @@ class Draughts extends React.Component {
 
   highlightPotentialMoves(legalMoves) {
     for (let move of legalMoves) {
-      if (move) {
+      if (move !== null) {
         let potentialSquare = document.getElementById(move);
         potentialSquare.style.backgroundColor = '#bdff5b';
       }
@@ -100,24 +108,46 @@ class Draughts extends React.Component {
     return null
   }
 
-  findLegalMoves(i, squares) {
+  // previous = 36, current = 50
+
+  findAscendingRowMoves(i, squares) {
     let legalMoves = [];
-    if (this.state.nextPlayer === 'X' && i + 7 < 64) {
-      if (i % 8 !== 0) {
-        legalMoves.push(this.addMove(squares, i, 7));
-      }
-      if (i % 8 !== 7) {
-        legalMoves.push(this.addMove(squares, i, 9));
-      }
-    } else if (this.state.nextPlayer === 'O' && i - 7 > -1){
-      if (i % 8 !== 7) {
-        legalMoves.push(this.addMove(squares, i, -7));
-      }
-      if (i % 8 !== 0) {
-        legalMoves.push(this.addMove(squares, i, -9));
-      }
+    if (i % 8 !== 0) {
+      legalMoves.push(this.addMove(squares, i, 7));
+    }
+    if (i % 8 !== 7) {
+      legalMoves.push(this.addMove(squares, i, 9));
+    }
+    return legalMoves
+  }
+
+  findDescendingRowMoves(i, squares) {
+    let legalMoves = []
+    if (i % 8 !== 7) {
+      legalMoves.push(this.addMove(squares, i, -7));
+    }
+    if (i % 8 !== 0) {
+      legalMoves.push(this.addMove(squares, i, -9));
+    }
+    return legalMoves
+  }
+
+  findLegalMoves(i, squares, bool) {
+    let legalMoves = [];
+    const playerSymbol = this.state.nextPlayer   
+    if (squares[i] === playerSymbol + playerSymbol) {
+      legalMoves = this.findAscendingRowMoves(i, squares)
+      legalMoves = legalMoves.concat(this.findDescendingRowMoves(i, squares))
+    } else if (playerSymbol === 'O' && i - 7 > -1){
+      legalMoves = this.findDescendingRowMoves(i, squares)
+    } else if (playerSymbol === 'X' && i + 7 < 64) {
+      legalMoves = this.findAscendingRowMoves(i, squares)
     }
 
+    // restrict to double jump moves if double jump happening
+    if (this.state.doubleJump && (i - this.state.previousFocus > 9 || i - this.state.previousFocus < -9)) {
+      legalMoves = legalMoves.filter(move => (move - i > 9 || move - i < -9 ))
+    }
     return legalMoves
   }
 
@@ -127,13 +157,13 @@ class Draughts extends React.Component {
       const takenPiece = previousFocus + (diff/2);
       squares[takenPiece] = null;
     }
+    squares[i] = squares[previousFocus];
     squares[previousFocus] = null;
-    squares[i] = nextPlayer;
     return squares;
   }
 
   isDoubleJumpPossible(i, legalMoves, previousFocus) {
-    if (i - previousFocus > 9 || i - previousFocus < -9) {
+    if (legalMoves && (i - previousFocus > 9 || i - previousFocus < -9)) {
       for (let move of legalMoves) {
         if (move !== null && (move - i > 9 || move - i < -9)) {
           return true;
@@ -150,33 +180,66 @@ class Draughts extends React.Component {
     return nextPlayer === 'X' ? 'O' : 'X'
   }
 
+  pieceBelongsToPlayer(piece, playerSymbol) {
+    return (piece === playerSymbol || piece === (playerSymbol + playerSymbol))
+  }
+
+  createKings(i, squares) {
+    if (squares[i] === 'X' && i > 55) {
+      squares[i] = 'XX';
+    } else if (squares[i] === 'O' && i < 8) {
+      squares[i] = 'OO';
+    }
+    return squares;
+  }
+
   handleClick(i) {
     let newFocus = null;
     const previousFocus = this.state.focus;
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     let squares = current.squares.slice();
+
     let previousLegalMoves = [];
     if (previousFocus !== null) {
-      previousLegalMoves = this.findLegalMoves(previousFocus, squares);
+      previousLegalMoves = this.findLegalMoves(previousFocus, squares, true);
+
     }
     let canDoubleJump = this.state.doubleJump
     if (canDoubleJump && !previousLegalMoves.includes(i)) {
       return;
     }
-
-    const legalMoves = this.findLegalMoves(i, squares);
+    
     let nextPlayer = this.state.nextPlayer;
 
     this.resetPeviousFocusHighlight();
     this.resetPotentialMovesHighlight(previousLegalMoves);
 
+    let legalMoves = this.findLegalMoves(i, squares, false);
+
     if (previousFocus !== null && previousLegalMoves.includes(i)) {
       squares = this.movePiece(i, squares, nextPlayer, previousFocus);
-      canDoubleJump = this.isDoubleJumpPossible(i, legalMoves, previousFocus);
+      legalMoves = this.findLegalMoves(i, squares, false);
+      const kingedSquares = this.createKings(i, squares);
+      if (squares === kingedSquares){
+        canDoubleJump = this.isDoubleJumpPossible(i, legalMoves, previousFocus);
+      } else {
+        squares = kingedSquares;
+      }
       nextPlayer = this.determineNextPlayer(nextPlayer, canDoubleJump);
     } 
-    if ((squares[i] === nextPlayer && previousFocus !== i && legalMoves.length !== 0) || canDoubleJump) {
+
+    // if its a double jump restrict legal moves to just the second jump possibilities
+    if (canDoubleJump) {
+      if (i - previousFocus > 9 || i - previousFocus < -9) {
+        legalMoves = legalMoves.filter(move => (move - i > 9 || move - i < -9 ))
+      }
+    }
+    if ((
+        this.pieceBelongsToPlayer(squares[i], nextPlayer) &&
+        previousFocus !== i && 
+        legalMoves.length !== 0
+      ) || canDoubleJump ) {
       this.focusHighlighting(i, legalMoves);
       newFocus = i;
     } 
