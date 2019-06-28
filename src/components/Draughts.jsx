@@ -52,6 +52,7 @@ class Draughts extends React.Component {
       stepNumber: 0,
       previousFocus: null,
       focus: null,
+      doubleJump: false,
     }
   }
 
@@ -131,17 +132,40 @@ class Draughts extends React.Component {
     return squares;
   }
 
+  isDoubleJumpPossible(i, legalMoves, previousFocus) {
+    if (i - previousFocus > 9 || i - previousFocus < -9) {
+      for (let move of legalMoves) {
+        if (move !== null && (move - i > 9 || move - i < -9)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  determineNextPlayer(nextPlayer, canDoubleJump) {
+    if (canDoubleJump) {
+      return nextPlayer
+    }
+    return nextPlayer === 'X' ? 'O' : 'X'
+  }
+
   handleClick(i) {
     let newFocus = null;
     const previousFocus = this.state.focus;
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     let squares = current.squares.slice();
-    const legalMoves = this.findLegalMoves(i, squares);
     let previousLegalMoves = [];
     if (previousFocus !== null) {
       previousLegalMoves = this.findLegalMoves(previousFocus, squares);
     }
+    let canDoubleJump = this.state.doubleJump
+    if (canDoubleJump && !previousLegalMoves.includes(i)) {
+      return;
+    }
+
+    const legalMoves = this.findLegalMoves(i, squares);
     let nextPlayer = this.state.nextPlayer;
 
     this.resetPeviousFocusHighlight();
@@ -149,9 +173,10 @@ class Draughts extends React.Component {
 
     if (previousFocus !== null && previousLegalMoves.includes(i)) {
       squares = this.movePiece(i, squares, nextPlayer, previousFocus);
-      nextPlayer = nextPlayer === 'X' ? 'O' : 'X';
-    // check piece belongs to player, click is not a double click, there are legal moves the piece can make.  
-    } else if (squares[i] === nextPlayer && previousFocus !== i && legalMoves.length !== 0) {
+      canDoubleJump = this.isDoubleJumpPossible(i, legalMoves, previousFocus);
+      nextPlayer = this.determineNextPlayer(nextPlayer, canDoubleJump);
+    } 
+    if ((squares[i] === nextPlayer && previousFocus !== i && legalMoves.length !== 0) || canDoubleJump) {
       this.focusHighlighting(i, legalMoves);
       newFocus = i;
     } 
@@ -163,6 +188,7 @@ class Draughts extends React.Component {
       previousFocus: previousFocus,
       focus: newFocus,
       nextPlayer: nextPlayer,
+      doubleJump: canDoubleJump,
     })
   }
 
