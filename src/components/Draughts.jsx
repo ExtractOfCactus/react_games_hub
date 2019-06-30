@@ -40,14 +40,16 @@ function squareIsStartingOSquare(i) {
   return false
 }
 
-function setUpTest() {
-  let squares = Array(64).fill(null);
-  squares[50] = 'XX';
-  squares[20] = 'XX';
-  squares[43] = 'O';
-  squares[27] = 'O';
-  return squares
-}
+// function setUpTest() {
+//   let squares = Array(64).fill(null);
+//   squares[13] = 'XX';
+//   squares[11] = 'XX';
+//   squares[9] = 'XX';
+//   squares[63] = 'XX';
+//   squares[20] = 'XX';
+//   squares[34] = 'O';
+//   return squares
+// }
 
 class Draughts extends React.Component {
   constructor(props) {
@@ -97,9 +99,10 @@ class Draughts extends React.Component {
   }
 
   addMove(squares, i, move) {
+    const pieceBelongsToPlayer = this.pieceBelongsToPlayer(squares[i + move], this.state.nextPlayer);
     if (squares[i + move] === null) {
       return i + move
-    } else if (squares[i + move] !== this.state.nextPlayer && squares[i + move + move] === null) {
+    } else if (!pieceBelongsToPlayer && squares[i + move + move] === null) {
       const potentialSquare = document.getElementById(i + move + move);
       if (!potentialSquare.classList.contains('light-square')){
         return i + move + move
@@ -107,8 +110,6 @@ class Draughts extends React.Component {
     }
     return null
   }
-
-  // previous = 36, current = 50
 
   findAscendingRowMoves(i, squares) {
     let legalMoves = [];
@@ -132,7 +133,7 @@ class Draughts extends React.Component {
     return legalMoves
   }
 
-  findLegalMoves(i, squares, bool) {
+  findLegalMoves(i, squares) {
     let legalMoves = [];
     const playerSymbol = this.state.nextPlayer   
     if (squares[i] === playerSymbol + playerSymbol) {
@@ -196,13 +197,17 @@ class Draughts extends React.Component {
   handleClick(i) {
     let newFocus = null;
     const previousFocus = this.state.focus;
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    let history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     let squares = current.squares.slice();
 
+    if (this.calculateWinner(squares)) {
+      return
+    }
+
     let previousLegalMoves = [];
     if (previousFocus !== null) {
-      previousLegalMoves = this.findLegalMoves(previousFocus, squares, true);
+      previousLegalMoves = this.findLegalMoves(previousFocus, squares);
 
     }
     let canDoubleJump = this.state.doubleJump
@@ -215,17 +220,18 @@ class Draughts extends React.Component {
     this.resetPeviousFocusHighlight();
     this.resetPotentialMovesHighlight(previousLegalMoves);
 
-    let legalMoves = this.findLegalMoves(i, squares, false);
+    let legalMoves = this.findLegalMoves(i, squares);
 
     if (previousFocus !== null && previousLegalMoves.includes(i)) {
       squares = this.movePiece(i, squares, nextPlayer, previousFocus);
-      legalMoves = this.findLegalMoves(i, squares, false);
+      legalMoves = this.findLegalMoves(i, squares);
       const kingedSquares = this.createKings(i, squares);
       if (squares === kingedSquares){
         canDoubleJump = this.isDoubleJumpPossible(i, legalMoves, previousFocus);
       } else {
         squares = kingedSquares;
       }
+      history = history.concat([{squares: squares}]);
       nextPlayer = this.determineNextPlayer(nextPlayer, canDoubleJump);
     } 
 
@@ -245,9 +251,8 @@ class Draughts extends React.Component {
     } 
 
     this.setState({
-      history: [{
-        squares: squares,
-      }],
+      history: history,
+      stepNumber: history.length - 1,
       previousFocus: previousFocus,
       focus: newFocus,
       nextPlayer: nextPlayer,
@@ -255,9 +260,32 @@ class Draughts extends React.Component {
     })
   }
 
+  calculateWinner(squares) {
+    let legalMoves = [];
+    const symbol = this.state.nextPlayer;
+    for (let i = 0; i < 64; i++) {
+      if (squares[i] === symbol || squares[i] === symbol + symbol) {
+        legalMoves = legalMoves.concat(this.findLegalMoves(i, squares))
+        legalMoves = legalMoves.filter(move => move !== null)
+        if (legalMoves.length > 0) {
+          return null
+        }
+      }
+    }
+    return symbol === 'X' ? 'O' : 'X';
+  }
+
   render() {
     const current = this.state.history[this.state.stepNumber];
-    const status = 'Next player: ' + (this.state.nextPlayer);
+    const winner = this.calculateWinner(current.squares)
+
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.nextPlayer);
+    }
+
     return (
       <div>
         <div className="game-board">
