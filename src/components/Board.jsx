@@ -1,18 +1,7 @@
 import React from 'react';
+import Square from './Square'
 
 const COLUMNS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-
-function Square(props) {
-  return (
-    <button
-      className={props.classOption}
-      id={props.id}
-      onClick={props.onClick}
-    >
-      {props.value}
-    </button>
-  );
-}
 
 function ColumnNotation(props) {
   return (

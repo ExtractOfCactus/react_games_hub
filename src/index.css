@@ -23,13 +23,13 @@ ol, ul {
   float: left;
   font-size: 24px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 50px;
+  height: 50px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 50px;
 }
 
 .light-square {
@@ -38,13 +38,13 @@ ol, ul {
   float: left;
   font-size: 21px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 50px;
+  height: 50px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 50px;
 }
 
 .dark-square {
@@ -53,13 +53,13 @@ ol, ul {
   float: left;
   font-size: 21px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 50px;
+  height: 50px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 50px;
 }
 
 .column-notation {
@@ -72,14 +72,14 @@ ol, ul {
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 50px;
 }
 
 .row-notation {
   background: #fff;
   float: left;
   font-size: 10px;
-  line-height: 34px;
+  line-height: 50px;
   height: 34px;
   margin-right: -1px;
   margin-top: -1px;
@@ -117,4 +117,23 @@ ol, ul {
 
 .game-info {
   margin-left: 20px;
+}
+
+.piece-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
+
+#wQ, #bQ, #wB, #bB {
+  width: 100%;
+}
+
+#wK, #bK {
+  width: 85%;
+}
+
+#wp, #bp {
+  width: 50%;
 }

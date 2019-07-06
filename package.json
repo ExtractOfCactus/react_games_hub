@@ -34,10 +34,14 @@
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
-    "jest": "^24.8.0",
     "react-test-renderer": "^16.8.6"
   },
   "jest": {
-    "setupFilesAfterEnv": ["/Users/glenyoung/personal_projects/game_hub/src/setupTests.js"]
+    "setupFilesAfterEnv": [
+      "/Users/glenyoung/personal_projects/game_hub/src/setupTests.js"
+    ],
+    "moduleNameMapper": {
+      ".+\\.(css|png|jpg)$": "identity-obj-proxy"
+    }
   }
 }
