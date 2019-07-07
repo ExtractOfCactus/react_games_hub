@@ -13,11 +13,13 @@ import black_bishop from '../images/black_bishop.png'
 import black_queen from '../images/black_queen.png'
 import black_king from '../images/black_king.png'
 
-
 import red_draughts_piece from '../images/red_draughts_piece.png'
 import black_draughts_piece from '../images/black_draughts_piece.png'
 import red_draughts_king from '../images/red_draughts_king.png'
 import black_draughts_king from '../images/black_draughts_king.png'
+
+import tictactoe_X from '../images/tictactoe_X.png'
+import tictactoe_O from '../images/tictactoe_O.png'
 
 const imageMap = {
   'wp': white_pawn,
@@ -35,7 +37,9 @@ const imageMap = {
   'X': black_draughts_piece,
   'XX': black_draughts_king,
   'O': red_draughts_piece,
-  'OO': red_draughts_king
+  'OO': red_draughts_king,
+  'x': tictactoe_X,
+  'o': tictactoe_O
 }
 
 function Square(props) {
