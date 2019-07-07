@@ -59,7 +59,7 @@ class Board extends React.Component {
     if (this.props.game === 1) {
       return 'square'
     }
-    return row % 2 === 0 ? 
+    return row % 2 === 1 ? 
       (index % 2 === 0 ? 'dark-square' : 'light-square'):
       (index % 2 === 0 ? 'light-square' : 'dark-square');
   }
@@ -74,7 +74,7 @@ class Board extends React.Component {
       }
       rows.push(
         <div key={row} className="board-row">
-          {this.renderRowNotation(row + 1)}
+          {this.renderRowNotation(this.props.size - row)}
           {boardSquares}
         </div>
       );
@@ -87,8 +87,8 @@ class Board extends React.Component {
     return (
       <div>
         <div>
-          {this.renderBoardColumns()}
           {this.renderBoardSquares()}
+          {this.renderBoardColumns()}
         </div>
 
       </div>

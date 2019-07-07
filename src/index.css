@@ -92,6 +92,7 @@ ol, ul {
   margin-left: 16px;
   clear: both;
   display: table;
+  margin-top: 1px;
 }
 
 .square:focus {
@@ -136,4 +137,9 @@ ol, ul {
 
 #wp, #bp {
   width: 50%;
+}
+
+.status-image {
+  display: inline-block;
+  width: 5%;
 }
