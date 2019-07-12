@@ -1,5 +1,7 @@
 import React from 'react';
 import Board from './Board';
+import red_draughts_piece from '../images/red_draughts_piece.png'
+import black_draughts_piece from '../images/black_draughts_piece.png'
 
 // i = index of square in the array of squares which makes up the board
 
@@ -17,10 +19,10 @@ function setUpDraughtsStart() {
 
 function squareIsStartingXSquare(i) {
   if (
-    (i < 23) &&
+    (i < 24) &&
     (
-      ((i < 8 || i >= 16) && i % 2 === 0) || 
-      (i > 8 && i < 16 && i % 2 === 1)
+      ((i < 8 || i > 16) && i % 2 === 1) || 
+      (i >= 8 && i < 16 && i % 2 === 0)
     )
   ) {
     return true
@@ -31,8 +33,8 @@ function squareIsStartingXSquare(i) {
 function squareIsStartingOSquare(i) {
   if (i > 39) {
     if (
-      ((i <= 47 || i > 56) && i % 2 === 1) || 
-      (i > 47 && i < 55 && i % 2 === 0)
+      ((i <= 47 || i >= 56) && i % 2 === 0) || 
+      (i > 47 && i <= 55 && i % 2 === 1)
     ) {
       return true
     }
@@ -278,12 +280,17 @@ class Draughts extends React.Component {
   render() {
     const current = this.state.history[this.state.stepNumber];
     const winner = this.calculateWinner(current.squares)
+    const status_X = <img src={black_draughts_piece} className="status-image" />;
+    const status_O = <img src={red_draughts_piece} className="status-image" />;
+    let status_image;
 
     let status;
     if (winner) {
-      status = 'Winner: ' + winner;
+      status = 'Winner: ';
+      status_image = winner === 'X' ? status_X : status_O;
     } else {
-      status = 'Next player: ' + (this.state.nextPlayer);
+      status = 'Next player: ';
+      status_image = this.state.nextPlayer === 'X' ? status_X : status_O;
     }
 
     return (
@@ -294,17 +301,18 @@ class Draughts extends React.Component {
             onClick={(i) => this.handleClick(i)}
             size={8}
           />
-          <div>
-            <button
-              className="game-selector" 
-              onClick={() => {this.props.returnHome(0)}}
-            >
-              Home Page
-            </button>
-          </div>
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <div>{status_image}</div>
+        </div>
+        <div>
+          <button
+            className="game-selector" 
+            onClick={() => {this.props.returnHome(0)}}
+          >
+            Home Page
+          </button>
         </div>
       </div>
     )

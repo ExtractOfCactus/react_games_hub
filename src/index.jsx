@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TicTacToe from './components/TicTacToe';
 import Draughts from './components/Draughts';
+import Chess from './components/Chess/Chess';
 import './index.css';
 
 class LandingPage extends React.Component {
@@ -25,15 +26,26 @@ class LandingPage extends React.Component {
       page = <TicTacToe returnHome={this.changeCurrentGame} />
     } else if (this.state.currentGame === 2) {
       page = <Draughts returnHome={this.changeCurrentGame} />
+    } else if (this.state.currentGame === 3) {
+      page = <Chess returnHome={this.changeCurrentGame} />
     } else {
       page = (
         <div>
           <h1>Welcome to the games page</h1>
           <div>
-            <button onClick={() => this.changeCurrentGame(1)}>Play TicTacToe</button>
+            <button onClick={() => this.changeCurrentGame(1)}>
+            Play TicTacToe
+            </button>
           </div>
           <div>
-            <button onClick={() => this.changeCurrentGame(2)}>Play Draughts</button>
+            <button onClick={() => this.changeCurrentGame(2)}>
+            Play Draughts
+            </button>
+          </div>
+          <div>
+            <button onClick={() => this.changeCurrentGame(3)}>
+            Play Chess
+            </button>
           </div>
         </div>
       )

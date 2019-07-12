@@ -65,7 +65,7 @@ class TicTacToe extends React.Component {
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    squares[i] = this.state.xIsNext ? 'x' : 'o';
     this.setState({
       history: history.concat([{
         squares: squares,
@@ -121,7 +121,7 @@ class TicTacToe extends React.Component {
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+      status = 'Next player: ' + (this.state.xIsNext ? 'x' : 'o');
     }
 
     return (

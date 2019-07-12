@@ -1,18 +1,7 @@
 import React from 'react';
+import Square from './Square'
 
 const COLUMNS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-
-function Square(props) {
-  return (
-    <button
-      className={props.classOption}
-      id={props.id}
-      onClick={props.onClick}
-    >
-      {props.value}
-    </button>
-  );
-}
 
 function ColumnNotation(props) {
   return (
@@ -70,7 +59,7 @@ class Board extends React.Component {
     if (this.props.game === 1) {
       return 'square'
     }
-    return row % 2 === 0 ? 
+    return row % 2 === 1 ? 
       (index % 2 === 0 ? 'dark-square' : 'light-square'):
       (index % 2 === 0 ? 'light-square' : 'dark-square');
   }
@@ -85,7 +74,7 @@ class Board extends React.Component {
       }
       rows.push(
         <div key={row} className="board-row">
-          {this.renderRowNotation(row + 1)}
+          {this.renderRowNotation(this.props.size - row)}
           {boardSquares}
         </div>
       );
@@ -98,8 +87,8 @@ class Board extends React.Component {
     return (
       <div>
         <div>
-          {this.renderBoardColumns()}
           {this.renderBoardSquares()}
+          {this.renderBoardColumns()}
         </div>
 
       </div>
