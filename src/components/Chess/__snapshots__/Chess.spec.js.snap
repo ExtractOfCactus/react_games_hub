@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Chess game at start matches snapshot 1`] = `
+<div>
+  <div
+    className="game-board"
+  >
+    <Board
+      onClick={[Function]}
+      size={8}
+      squares={
+        Array [
+          "bR",
+          "bN",
+          "bB",
+          "bQ",
+          "bK",
+          "bB",
+          "bN",
+          "bR",
+          "bp",
+          "bp",
+          "bp",
+          "bp",
+          "bp",
+          "bp",
+          "bp",
+          "bp",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "wp",
+          "wp",
+          "wp",
+          "wp",
+          "wp",
+          "wp",
+          "wp",
+          "wp",
+          "wR",
+          "wN",
+          "wB",
+          "wQ",
+          "wK",
+          "wB",
+          "wN",
+          "wR",
+        ]
+      }
+    />
+  </div>
+  <div
+    className="game-info"
+  >
+    <div>
+      Next player
+    </div>
+    <div>
+      <img
+        alt="White piece"
+        className="status-image"
+        src={
+          Object {
+            "process": [Function],
+          }
+        }
+      />
+    </div>
+  </div>
+  <div>
+    <button
+      className="game-selector"
+      onClick={[Function]}
+    >
+      Home Page
+    </button>
+  </div>
+</div>
+`;
